@@ -4,7 +4,7 @@ import React from "react";
 import LoginPage from "./LoginPage.js";
 import { MOVIES } from "flixhq-core"; // Import your flixhq package here
 import "./App.css";
-
+// sdsd
 const APIURL = "http://localhost:4000/api/movies";
 const SEARCHAPI = "http://localhost:5000/search";
 

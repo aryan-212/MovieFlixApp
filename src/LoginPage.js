@@ -1,83 +1,48 @@
-import React, { useState } from 'react';
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import React, { useState } from "react";
 
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCGzRdo4c1HC1qo1qxEfR_d0oRzSUcLllQ",
-  authDomain: "movieflix-5017b.firebaseapp.com",
-  projectId: "movieflix-5017b",
-  storageBucket: "movieflix-5017b.appspot.com",
-  messagingSenderId: "878710165881",
-  appId: "1:878710165881:web:4904171e810f86721e1fa8",
-  measurementId: "G-17FTV5CZ34"
-};
+function LoginPage({ onClose }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [signedUpUsername, setSignedUpUsername] = useState(null);
 
-// Initialize Firebase
-firebase.initializeApp( firebaseConfig );
-
-function LoginPage ( { onClose } )
-{
-  const [ username, setUsername ] = useState( '' );
-  const [ password, setPassword ] = useState( '' );
-  const [ confirmPassword, setConfirmPassword ] = useState( '' );
-  const [ isSignUp, setIsSignUp ] = useState( false );
-  const [ signedUpUsername, setSignedUpUsername ] = useState( null );
-
-  const handleSignup = async () =>
-  {
-    try
-    {
-      if ( password === confirmPassword )
-      {
-        await firebase.auth().createUserWithEmailAndPassword( username, password );
-        setSignedUpUsername( username );
-        setIsSignUp( false );
-      } else
-      {
-        console.error( 'Passwords do not match' );
-      }
-    } catch ( error )
-    {
-      console.error( 'Error signing up:', error.message );
+  const handleSignup = () => {
+    if (password === confirmPassword) {
+      setSignedUpUsername(username);
+      setIsSignUp(false);
+      // onClose();
+    } else {
+      console.error("Passwords do not match");
     }
   };
 
-  const handleLogin = async () =>
-  {
-    try
-    {
-      await firebase.auth().signInWithEmailAndPassword( username, password );
-      onClose();
-    } catch ( error )
-    {
-      console.error( 'Error logging in:', error.message );
-    }
+  const handleLogin = () => {
+    console.log("Login logic");
+    console.log("Username:", username);
+    console.log("Password:", password);
+
+    onClose();
   };
 
-  const handleSignupSubmit = ( e ) =>
-  {
-    e.preventDefault();
+  const handleSignupSubmit = (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
     handleSignup();
   };
 
-  const handleLoginSubmit = ( e ) =>
-  {
-    e.preventDefault();
+  const handleLoginSubmit = (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
     handleLogin();
   };
 
-  const handleOverlayClick = ( e ) =>
-  {
-    if ( e.target === e.currentTarget )
-    {
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  const toggleMode = () =>
-  {
-    setIsSignUp( ( prevIsSignUp ) => !prevIsSignUp );
+  const toggleMode = () => {
+    setIsSignUp((prevIsSignUp) => !prevIsSignUp);
   };
 
   return (
@@ -92,15 +57,17 @@ function LoginPage ( { onClose } )
               Confirm account creation?
             </h4>
           )}
-          {!signedUpUsername && <h2>{isSignUp ? 'Sign Up' : 'Welcome back!'}</h2>}
+          {!signedUpUsername && (
+            <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>
+          )}
           {isSignUp ? (
-            <form onSubmit={handleSignupSubmit}>
+            <form onSubmit={handleSignupSubmit} action="/signup" method="POST">
               <label>
                 Username:
                 <input
                   type="text"
                   value={username}
-                  onChange={( e ) => setUsername( e.target.value )}
+                  onChange={(e) => setUsername(e.target.value)}
                   style={styles.input}
                 />
               </label>
@@ -110,7 +77,7 @@ function LoginPage ( { onClose } )
                 <input
                   type="password"
                   value={password}
-                  onChange={( e ) => setPassword( e.target.value )}
+                  onChange={(e) => setPassword(e.target.value)}
                   style={styles.input}
                 />
               </label>
@@ -120,7 +87,7 @@ function LoginPage ( { onClose } )
                 <input
                   type="password"
                   value={confirmPassword}
-                  onChange={( e ) => setConfirmPassword( e.target.value )}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   style={styles.input}
                 />
               </label>
@@ -130,13 +97,13 @@ function LoginPage ( { onClose } )
               </button>
             </form>
           ) : (
-            <form onSubmit={handleLoginSubmit}>
+            <form onSubmit={handleLoginSubmit} action="/login" method="POST">
               <label>
                 Username:
                 <input
                   type="text"
                   value={username}
-                  onChange={( e ) => setUsername( e.target.value )}
+                  onChange={(e) => setUsername(e.target.value)}
                   style={styles.input}
                 />
               </label>
@@ -146,7 +113,7 @@ function LoginPage ( { onClose } )
                 <input
                   type="password"
                   value={password}
-                  onChange={( e ) => setPassword( e.target.value )}
+                  onChange={(e) => setPassword(e.target.value)}
                   style={styles.input}
                 />
               </label>
@@ -156,10 +123,13 @@ function LoginPage ( { onClose } )
               </button>
             </form>
           )}
-          <div style={{ marginTop: '10px', color: 'white' }}>
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <span onClick={toggleMode} style={{ cursor: 'pointer', color: 'blue' }}>
-              {isSignUp ? 'Login now' : 'Sign up now'}
+          <div style={{ marginTop: "10px", color: "white" }}>
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+            <span
+              onClick={toggleMode}
+              style={{ cursor: "pointer", color: "blue" }}
+            >
+              {isSignUp ? "Login now" : "Sign up now"}
             </span>
           </div>
         </div>
@@ -170,43 +140,35 @@ function LoginPage ( { onClose } )
 
 const styles = {
   overlay: {
-    position: 'fixed',
+    position: "fixed",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    background: 'rgba(0, 0, 0, 0.7)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    background: "rgba(0, 0, 0, 0.7)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1,
   },
   modal: {
-    backgroundColor: 'black',
-    padding: '20px',
-    borderRadius: '8px',
-    textAlign: 'center',
+    backgroundColor: "black",
+    padding: "20px",
+    borderRadius: "8px",
+    textAlign: "center",
   },
   modalContent: {
-    width: '300px',
+    width: "300px",
   },
   input: {
-    width: '100%',
-    padding: '8px',
-    margin: '5px 0',
-    boxSizing: 'border-box',
-    backgroundColor: 'black',
-    color: 'white',
-    border: '1px solid white',
-    borderRadius: '4px',
-  },
-  greenButton: {
-    backgroundColor: 'green',
-    color: 'white',
-    padding: '8px',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
+    width: "100%",
+    padding: "8px",
+    margin: "5px 0",
+    boxSizing: "border-box",
+    backgroundColor: "black",
+    color: "white",
+    border: "1px solid white",
+    borderRadius: "4px",
   },
 };
 
