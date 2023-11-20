@@ -8,63 +8,77 @@ import "./App.css";
 const APIURL = "http://localhost:4000/api/movies";
 const SEARCHAPI = "http://localhost:5000/search";
 
-function App() {
-  const [movies, setMovies] = useState([]);
-  const [search, setSearch] = useState("");
-  const [showLoginPage, setShowLoginPage] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
+function App ()
+{
+  const [ movies, setMovies ] = useState( [] );
+  const [ search, setSearch ] = useState( "" );
+  const [ showLoginPage, setShowLoginPage ] = useState( false );
+  const [ isLoggedIn, setIsLoggedIn ] = useState( false );
+  const [ username, setUsername ] = useState( "" );
 
-  const handleLoginClick = () => {
-    setShowLoginPage(true);
+  const handleLoginClick = () =>
+  {
+    setShowLoginPage( true );
   };
 
-  const handleCloseLoginPage = (username) => {
-    setShowLoginPage(false);
-    if (username) {
-      setIsLoggedIn(true);
-      setUsername(username);
+  const handleCloseLoginPage = ( username ) =>
+  {
+    setShowLoginPage( false );
+    if ( username )
+    {
+      setIsLoggedIn( true );
+      setUsername( username );
     }
   };
 
-  const handleLogoutClick = () => {
-    setIsLoggedIn(false);
-    setUsername("");
+  const handleLogoutClick = () =>
+  {
+    setIsLoggedIn( false );
+    setUsername( "" );
   };
 
-  const changeTheSearch = (event) => {
-    setSearch(event.target.value);
+  const changeTheSearch = ( event ) =>
+  {
+    setSearch( event.target.value );
   };
 
   const flixhq = new MOVIES.FlixHQ(); // Initialize the flixhq package
 
-  useEffect(() => {
-    if (search === "") {
+  useEffect( () =>
+  {
+    if ( search === "" )
+    {
       // If search is empty, load all movies from your local API
       axios
-        .get(APIURL)
-        .then((response) => {
-          setMovies(response.data.slider);
-        })
-        .catch((error) => {
-          console.error("Error fetching movies:", error);
-        });
-    } else {
+        .get( APIURL )
+        .then( ( response ) =>
+        {
+          setMovies( response.data.slider );
+        } )
+        .catch( ( error ) =>
+        {
+          console.error( "Error fetching movies:", error );
+        } );
+    } else
+    {
       // If there's a search term, fetch movies from your backend search API
       axios
-        .get(`${SEARCHAPI}?query=${search}`)
-        .then((response) => {
-          setMovies(response.data.results); // Update state with the fetched movie data
-        })
-        .catch((error) => {
-          console.error("Error searching movies:", error);
-        });
+        .get( `${ SEARCHAPI }?query=${ search }` )
+        .then( ( response ) =>
+        {
+          setMovies( response.data.results ); // Update state with the fetched movie data
+        } )
+        .catch( ( error ) =>
+        {
+          console.error( "Error searching movies:", error );
+        } );
     }
-  }, [search]);
+  }, [ search ] );
 
-  const playMovie = (url) => {
+  const playMovie = ( url ) =>
+  {
     // Redirect to the provided movie URL to start playing
-    window.open(url, "_blank");
+    window.open( url, "_blank" );
   };
 
   return (
@@ -112,16 +126,16 @@ function App() {
         <br />
         <br />
         <div className="movie-container">
-          {movies.map((movie, index) => (
+          {movies.map( ( movie, index ) => (
             <div
               key={index}
               className="movie-item"
-              onClick={() => playMovie(movie.url)}
+              onClick={() => playMovie( movie.url )}
             >
               <img src={movie.image} alt={movie.title} />
               <p>{movie.title}</p>
             </div>
-          ))}
+          ) )}
         </div>
       </div>
     </div>
