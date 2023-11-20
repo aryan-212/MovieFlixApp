@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import firebase from "./firebase.js"; // Adjust the path accordingly
 
 function LoginPage ( { onClose } )
 {
@@ -8,37 +11,56 @@ function LoginPage ( { onClose } )
   const [ isSignUp, setIsSignUp ] = useState( false );
   const [ signedUpUsername, setSignedUpUsername ] = useState( null );
 
-  const handleSignup = () =>
+  const handleSignup = async () =>
   {
     if ( password === confirmPassword )
     {
-      setSignedUpUsername( username );
-      setIsSignUp( false );
-      // onClose();
+      try
+      {
+        await firebase.auth().createUserWithEmailAndPassword( username, password );
+        setSignedUpUsername( username );
+        setIsSignUp( false );
+        onClose();
+
+        // Show success notification
+        toast.success( "Account Created Successfully" );
+      } catch ( error )
+      {
+        console.error( "Error creating account:", error.message );
+        // Show error notification
+        toast.error( "Account Creation Failed" );
+      }
     } else
     {
       console.error( "Passwords do not match" );
+      // Show error notification
+      toast.error( "Passwords do not match" );
     }
   };
 
-  const handleLogin = () =>
+  const handleLogin = async () =>
   {
-    console.log( "Login logic" );
-    console.log( "Username:", username );
-    console.log( "Password:", password );
-
-    onClose();
+    try
+    {
+      await firebase.auth().signInWithEmailAndPassword( username, password );
+      onClose();
+    } catch ( error )
+    {
+      console.error( "Error signing in:", error.message );
+      // Show error notification
+      toast.error( "Login Failed" );
+    }
   };
 
   const handleSignupSubmit = ( e ) =>
   {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     handleSignup();
   };
 
   const handleLoginSubmit = ( e ) =>
   {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     handleLogin();
   };
 
@@ -67,11 +89,9 @@ function LoginPage ( { onClose } )
               Confirm account creation?
             </h4>
           )}
-          {!signedUpUsername && (
-            <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>
-          )}
+          {!signedUpUsername && <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>}
           {isSignUp ? (
-            <form onSubmit={handleSignupSubmit} action="/signup" method="POST">
+            <form onSubmit={handleSignupSubmit}>
               <label>
                 Username:
                 <input
@@ -107,7 +127,7 @@ function LoginPage ( { onClose } )
               </button>
             </form>
           ) : (
-            <form onSubmit={handleLoginSubmit} action="/login" method="POST">
+            <form onSubmit={handleLoginSubmit}>
               <label>
                 Username:
                 <input
@@ -135,15 +155,13 @@ function LoginPage ( { onClose } )
           )}
           <div style={{ marginTop: "10px", color: "white" }}>
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-            <span
-              onClick={toggleMode}
-              style={{ cursor: "pointer", color: "blue" }}
-            >
+            <span onClick={toggleMode} style={{ cursor: "pointer", color: "blue" }}>
               {isSignUp ? "Login now" : "Sign up now"}
             </span>
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
@@ -179,6 +197,14 @@ const styles = {
     color: "white",
     border: "1px solid white",
     borderRadius: "4px",
+  },
+  greenButton: {
+    backgroundColor: "green",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
 };
 
