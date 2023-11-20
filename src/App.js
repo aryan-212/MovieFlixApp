@@ -1,13 +1,12 @@
-import Result from "./Components/Result";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import React from "react";
-import LoginPage from "./LoginPage";
+import LoginPage from "./LoginPage.js";
+import { MOVIES } from "flixhq-core"; // Import your flixhq package here
+import "./App.css";
 
-const APIURL =
-  "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1";
-const SEARCHAPI =
-  "https://api.themoviedb.org/3/search/movie?&api_key=04c35731a5ee918f014970082a0088b1&query=";
+const APIURL = "http://localhost:4000/api/movies";
+const SEARCHAPI = "http://localhost:5000/search";
 
 function App() {
   const [movies, setMovies] = useState([]);
@@ -37,88 +36,92 @@ function App() {
     setSearch(event.target.value);
   };
 
-  const getAllMovies = () => {
-    axios
-      .get(APIURL)
-      .then((response) => {
-        console.log(response.data.results);
-        setMovies(response.data.results);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getSearchedMovies = () => {
-    axios
-      .get(SEARCHAPI + search)
-      .then((response) => {
-        console.log(response.data.results);
-        setMovies(response.data.results);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const flixhq = new MOVIES.FlixHQ(); // Initialize the flixhq package
 
   useEffect(() => {
-    setMovies([]);
     if (search === "") {
-      getAllMovies();
+      // If search is empty, load all movies from your local API
+      axios
+        .get(APIURL)
+        .then((response) => {
+          setMovies(response.data.slider);
+        })
+        .catch((error) => {
+          console.error("Error fetching movies:", error);
+        });
     } else {
-      getSearchedMovies();
+      // If there's a search term, fetch movies from your backend search API
+      axios
+        .get(`${SEARCHAPI}?query=${search}`)
+        .then((response) => {
+          setMovies(response.data.results); // Update state with the fetched movie data
+        })
+        .catch((error) => {
+          console.error("Error searching movies:", error);
+        });
     }
   }, [search]);
+
+  const playMovie = (url) => {
+    // Redirect to the provided movie URL to start playing
+    window.open(url, "_blank");
+  };
 
   return (
     <div
       style={{
-        backgroundImage: 'url("your-background-image.jpg")',
-        backgroundSize: "cover",
-        minHeight: "100vh",
+        backgroundColor: "black",
+        color: "lightgreen",
+        position: "relative",
       }}
     >
-      <div
-        style={{
-          backgroundColor: "black",
-          color: "lightgreen",
-          position: "relative",
-        }}
-      >
-        <h1 align="center">Movie Corps</h1>
-        {isLoggedIn ? (
-          <div
-            className="text-right p-2"
-            style={{ position: "absolute", top: 5, right: 15 }}
+      <h1 align="center">MovieFlix</h1>
+      {isLoggedIn ? (
+        <div
+          className="text-right p-2"
+          style={{ position: "absolute", top: 5, right: 15 }}
+        ></div>
+      ) : (
+        <div
+          className="border border-black rounded text-3xl text-white p-2 text-right"
+          style={{ position: "absolute", top: 5, right: 15 }}
+        >
+          <button
+            onClick={handleLoginClick}
+            style={{
+              color: "lightgreen",
+              backgroundColor: "darkgreen",
+              padding: "6px 12px", // Adjust padding to increase size
+              borderRadius: "8px", // Make it rounded
+              fontSize: "25px", // Adjust font size
+              fontWeight: "bold", // Optional: Adjust font weight
+            }}
           >
-            Welcome {username}!
-            <button onClick={handleLogoutClick} style={{ color: "lightgreen" }}>
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div
-            className="border border-black rounded text-3xl text-white p-2 text-right"
-            style={{ position: "absolute", top: 5, right: 15 }}
-          >
-            <button onClick={handleLoginClick} style={{ color: "lightgreen" }}>
-              Login
-            </button>
-          </div>
-        )}
-        <div className="max-w-[1240px] shadow-xl min-h-[200px] mx-auto p-3">
-          {showLoginPage && <LoginPage onClose={handleCloseLoginPage} />}
-          <input
-            type="search"
-            value={search}
-            onChange={changeTheSearch}
-            className="w-full border border-black rounded text-slate-700 p-4"
-          />
-          {movies.length === 0 ? (
-            <div className="text-3xl text-center mt-2"> Loading... </div>
-          ) : (
-            <Result movies={movies} />
-          )}
+            Login
+          </button>
+        </div>
+      )}
+      <div className="max-w-[1240px] shadow-xl min-h-[200px] mx-auto p-3">
+        {showLoginPage && <LoginPage onClose={handleCloseLoginPage} />}
+        <input
+          type="search"
+          value={search}
+          onChange={changeTheSearch}
+          className="w-full border border-black rounded text-slate-700 p-4"
+        />
+        <br />
+        <br />
+        <div className="movie-container">
+          {movies.map((movie, index) => (
+            <div
+              key={index}
+              className="movie-item"
+              onClick={() => playMovie(movie.url)}
+            >
+              <img src={movie.image} alt={movie.title} />
+              <p>{movie.title}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
