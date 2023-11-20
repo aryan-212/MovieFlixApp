@@ -6,10 +6,10 @@
 }
 
 .movie-item {
-  width: calc(
-    25% - 10px
-  ); /* Adjust width to fit 4 cards in a row (10px is the gap between cards) */
-  margin-bottom: 20px; /* Space between rows */
+  width: calc(25% - 10px);
+  /* Adjust width to fit 4 cards in a row (10px is the gap between cards) */
+  margin-bottom: 20px;
+  /* Space between rows */
 }
 
 .movie-item img {

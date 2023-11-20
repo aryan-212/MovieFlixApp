@@ -1,48 +1,58 @@
 import React, { useState } from "react";
 
-function LoginPage({ onClose }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [signedUpUsername, setSignedUpUsername] = useState(null);
+function LoginPage ( { onClose } )
+{
+  const [ username, setUsername ] = useState( "" );
+  const [ password, setPassword ] = useState( "" );
+  const [ confirmPassword, setConfirmPassword ] = useState( "" );
+  const [ isSignUp, setIsSignUp ] = useState( false );
+  const [ signedUpUsername, setSignedUpUsername ] = useState( null );
 
-  const handleSignup = () => {
-    if (password === confirmPassword) {
-      setSignedUpUsername(username);
-      setIsSignUp(false);
+  const handleSignup = () =>
+  {
+    if ( password === confirmPassword )
+    {
+      setSignedUpUsername( username );
+      setIsSignUp( false );
       // onClose();
-    } else {
-      console.error("Passwords do not match");
+    } else
+    {
+      console.error( "Passwords do not match" );
     }
   };
 
-  const handleLogin = () => {
-    console.log("Login logic");
-    console.log("Username:", username);
-    console.log("Password:", password);
+  const handleLogin = () =>
+  {
+    console.log( "Login logic" );
+    console.log( "Username:", username );
+    console.log( "Password:", password );
 
     onClose();
   };
 
-  const handleSignupSubmit = (e) => {
+  const handleSignupSubmit = ( e ) =>
+  {
     e.preventDefault(); // Prevent default form submission behavior
     handleSignup();
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = ( e ) =>
+  {
     e.preventDefault(); // Prevent default form submission behavior
     handleLogin();
   };
 
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
+  const handleOverlayClick = ( e ) =>
+  {
+    if ( e.target === e.currentTarget )
+    {
       onClose();
     }
   };
 
-  const toggleMode = () => {
-    setIsSignUp((prevIsSignUp) => !prevIsSignUp);
+  const toggleMode = () =>
+  {
+    setIsSignUp( ( prevIsSignUp ) => !prevIsSignUp );
   };
 
   return (
@@ -67,7 +77,7 @@ function LoginPage({ onClose }) {
                 <input
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={( e ) => setUsername( e.target.value )}
                   style={styles.input}
                 />
               </label>
@@ -77,7 +87,7 @@ function LoginPage({ onClose }) {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={( e ) => setPassword( e.target.value )}
                   style={styles.input}
                 />
               </label>
@@ -87,7 +97,7 @@ function LoginPage({ onClose }) {
                 <input
                   type="password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={( e ) => setConfirmPassword( e.target.value )}
                   style={styles.input}
                 />
               </label>
@@ -103,7 +113,7 @@ function LoginPage({ onClose }) {
                 <input
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={( e ) => setUsername( e.target.value )}
                   style={styles.input}
                 />
               </label>
@@ -113,7 +123,7 @@ function LoginPage({ onClose }) {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={( e ) => setPassword( e.target.value )}
                   style={styles.input}
                 />
               </label>

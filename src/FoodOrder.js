@@ -7,7 +7,8 @@ const foodItems = [
 		name: "Pizza",
 		price: 10,
 		image:
-"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiXsrX3Wg6oJAe4gxd8ftxXgLMBqisXyzk_6_0tKcw&s"	},
+			"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiXsrX3Wg6oJAe4gxd8ftxXgLMBqisXyzk_6_0tKcw&s"
+	},
 	{
 		id: 2,
 		name: "Burger",
@@ -24,13 +25,15 @@ const foodItems = [
 	},
 ];
 
-const FoodOrder = () => {
-	const [order, setOrder] = useState(
-		foodItems.map((item) => ({ ...item, quantity: 0 }))
+const FoodOrder = () =>
+{
+	const [ order, setOrder ] = useState(
+		foodItems.map( ( item ) => ( { ...item, quantity: 0 } ) )
 	);
 
-	const calculateTotalCost = () => {
-		return order.reduce((total, item) => total + item.price * item.quantity, 0);
+	const calculateTotalCost = () =>
+	{
+		return order.reduce( ( total, item ) => total + item.price * item.quantity, 0 );
 	};
 
 	const orderTime = new Date().toLocaleTimeString();
@@ -38,20 +41,23 @@ const FoodOrder = () => {
 		Date.now() + 60 * 1000
 	).toLocaleTimeString();
 
-	const handleQuantityChange = (itemId, quantity) => {
-		const updatedOrder = order.map((item) => {
-			if (item.id === itemId) {
-				return { ...item, quantity: parseInt(quantity) };
+	const handleQuantityChange = ( itemId, quantity ) =>
+	{
+		const updatedOrder = order.map( ( item ) =>
+		{
+			if ( item.id === itemId )
+			{
+				return { ...item, quantity: parseInt( quantity ) };
 			}
 			return item;
-		});
-		setOrder(updatedOrder);
+		} );
+		setOrder( updatedOrder );
 	};
 
 	return (
 		<div className="food-order">
 			<h1>Food Order</h1>
-			{order.map((item) => (
+			{order.map( ( item ) => (
 				<div className="food-item" key={item.id}>
 					<img src={item.image} alt={item.name} />
 					<h2>{item.name}</h2>
@@ -61,10 +67,10 @@ const FoodOrder = () => {
 						min="0"
 						placeholder="Quantity"
 						value={item.quantity}
-						onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+						onChange={( e ) => handleQuantityChange( item.id, e.target.value )}
 					/>
 				</div>
-			))}
+			) )}
 			<div className="order-summary">
 				<h2>Order Summary</h2>
 				<p>Total Cost: ${calculateTotalCost()}</p>
@@ -75,4 +81,4 @@ const FoodOrder = () => {
 	);
 };
 
-export default FoodOrder    ;
+export default FoodOrder;
