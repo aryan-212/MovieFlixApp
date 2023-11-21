@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyCGzRdo4c1HC1qo1qxEfR_d0oRzSUcLllQ",
     authDomain: "movieflix-5017b.firebaseapp.com",
@@ -15,4 +17,4 @@ const app = initializeApp( firebaseConfig );
 const auth = getAuth( app );
 const db = getFirestore( app );
 
-export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, db };
+export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, db };

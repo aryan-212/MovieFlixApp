@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "./firebase.js";
+import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "./firebase.js";
 
 function AuthenticationPage ( { onClose } )
 {
@@ -11,6 +11,7 @@ function AuthenticationPage ( { onClose } )
   const [ isSignUp, setIsSignUp ] = useState( false );
   const [ signedUpUsername, setSignedUpUsername ] = useState( null );
   const [ passwordLengthError, setPasswordLengthError ] = useState( "" );
+  const [ resetPasswordRequested, setResetPasswordRequested ] = useState( false );
 
   const handleAuthentication = async ( e ) =>
   {
@@ -18,8 +19,14 @@ function AuthenticationPage ( { onClose } )
 
     try
     {
-      console.log( "Email:", email );
-      console.log( "Password:", password );
+      if ( resetPasswordRequested )
+      {
+        // Reset Password
+        await sendPasswordResetEmail( auth, email );
+        toast.success( "Password reset email sent. Check your inbox." );
+        setResetPasswordRequested( false );
+        return;
+      }
 
       if ( isSignUp )
       {
@@ -85,6 +92,11 @@ function AuthenticationPage ( { onClose } )
     setIsSignUp( ( prevIsSignUp ) => !prevIsSignUp );
   };
 
+  const handleResetPasswordClick = () =>
+  {
+    setResetPasswordRequested( true );
+  };
+
   return (
     <div style={styles.overlay} onClick={handleOverlayClick}>
       <div style={styles.modal}>
@@ -143,6 +155,11 @@ function AuthenticationPage ( { onClose } )
             <button type="submit" style={styles.button}>
               {isSignUp ? "Sign Up" : "Log In"}
             </button>
+            {!isSignUp && (
+              <div style={styles.linkText} onClick={handleResetPasswordClick}>
+                Reset Password
+              </div>
+            )}
           </form>
           <div style={styles.infoText}>
             {isSignUp
@@ -205,7 +222,7 @@ const styles = {
   },
   linkText: {
     cursor: "pointer",
-    color: "blue",
+    color: "green",
   },
 };
 
