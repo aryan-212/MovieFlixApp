@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "./firebase.js";  // Adjust the import accordingly
+import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "./firebase.js";
 
 function AuthenticationPage ( { onClose } )
 {
@@ -10,6 +10,7 @@ function AuthenticationPage ( { onClose } )
   const [ confirmPassword, setConfirmPassword ] = useState( "" );
   const [ isSignUp, setIsSignUp ] = useState( false );
   const [ signedUpUsername, setSignedUpUsername ] = useState( null );
+  const [ passwordLengthError, setPasswordLengthError ] = useState( "" );
 
   const handleAuthentication = async ( e ) =>
   {
@@ -17,12 +18,24 @@ function AuthenticationPage ( { onClose } )
 
     try
     {
+      console.log( "Email:", email );
+      console.log( "Password:", password );
+
       if ( isSignUp )
       {
         // Sign Up
+        console.log( "Signing up..." );
+
+        if ( password.length < 6 )
+        {
+          setPasswordLengthError( "Password must be at least 6 characters long" );
+          return;
+        }
+
         if ( password === confirmPassword )
         {
           await createUserWithEmailAndPassword( auth, email, password );
+          console.log( "Sign up successful!" );
           setSignedUpUsername( email );
           setIsSignUp( false );
           onClose();
@@ -35,13 +48,27 @@ function AuthenticationPage ( { onClose } )
       } else
       {
         // Sign In
+        console.log( "Signing in..." );
         await signInWithEmailAndPassword( auth, email, password );
+        console.log( "Sign in successful!" );
         onClose();
       }
     } catch ( error )
     {
-      console.error( "Authentication error:", error.message );
+      console.error( "Authentication error:", error );
       toast.error( "Authentication Failed" );
+    }
+  };
+
+  const handlePasswordChange = ( e ) =>
+  {
+    setPassword( e.target.value );
+    if ( isSignUp && e.target.value.length < 6 )
+    {
+      setPasswordLengthError( "Password must be at least 6 characters long" );
+    } else
+    {
+      setPasswordLengthError( "" );
     }
   };
 
@@ -89,9 +116,14 @@ function AuthenticationPage ( { onClose } )
               <input
                 type="password"
                 value={password}
-                onChange={( e ) => setPassword( e.target.value )}
+                onChange={handlePasswordChange}
                 style={styles.input}
               />
+              {passwordLengthError && (
+                <div style={{ color: "red", fontSize: "12px" }}>
+                  {passwordLengthError}
+                </div>
+              )}
             </label>
             {isSignUp && (
               <>
