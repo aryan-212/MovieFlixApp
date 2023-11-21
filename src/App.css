@@ -1,4 +1,8 @@
 /* Add this CSS to ensure uniform image sizes and display 4 movies per row */
+/* App.css */
+
+
+
 .movie-container {
   display: flex;
   flex-wrap: wrap;
