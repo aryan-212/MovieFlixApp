@@ -1,0 +1,26 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "react-scripts/build",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "src/HomePageAPI.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "src/SearchAPI.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/.*",
+            "dest": "/index.html"
+        }
+    ]
+}
