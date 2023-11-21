@@ -1,80 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import firebase from "./firebase.js";
-import ModalOverlay from "./ModalOverlay.js";
+import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "./firebase.js";  // Adjust the import accordingly
 
-function LoginPage ( { onClose } )
+function AuthenticationPage ( { onClose } )
 {
-  const [ username, setUsername ] = useState( "" );
+  const [ email, setEmail ] = useState( "" );
   const [ password, setPassword ] = useState( "" );
   const [ confirmPassword, setConfirmPassword ] = useState( "" );
   const [ isSignUp, setIsSignUp ] = useState( false );
   const [ signedUpUsername, setSignedUpUsername ] = useState( null );
 
-  const handleSignup = async () =>
+  const handleAuthentication = async ( e ) =>
   {
-    if ( password === confirmPassword )
-    {
-      try
-      {
-        await firebase.database().ref( `users/${ username }` ).set( {
-          username,
-          password,
-        } );
+    e.preventDefault();
 
-        setSignedUpUsername( username );
-        setIsSignUp( false );
-        onClose();
-
-        toast.success( "Account Created Successfully" );
-      } catch ( error )
-      {
-        console.error( "Error creating account:", error.message );
-        toast.error( "Account Creation Failed" );
-      }
-    } else
-    {
-      console.error( "Passwords do not match" );
-      toast.error( "Passwords do not match" );
-    }
-  };
-
-  const handleLogin = async () =>
-  {
     try
     {
-      const snapshot = await firebase
-        .database()
-        .ref( `users/${ username }` )
-        .once( "value" );
-      const userData = snapshot.val();
-
-      if ( userData && userData.password === password )
+      if ( isSignUp )
       {
-        onClose();
+        // Sign Up
+        if ( password === confirmPassword )
+        {
+          await createUserWithEmailAndPassword( auth, email, password );
+          setSignedUpUsername( email );
+          setIsSignUp( false );
+          onClose();
+          toast.success( "Account Created Successfully" );
+        } else
+        {
+          console.error( "Passwords do not match" );
+          toast.error( "Passwords do not match" );
+        }
       } else
       {
-        console.error( "Invalid username or password" );
-        toast.error( "Login Failed" );
+        // Sign In
+        await signInWithEmailAndPassword( auth, email, password );
+        onClose();
       }
     } catch ( error )
     {
-      console.error( "Error signing in:", error.message );
-      toast.error( "Login Failed" );
+      console.error( "Authentication error:", error.message );
+      toast.error( "Authentication Failed" );
     }
   };
 
-  const handleSignupSubmit = ( e ) =>
+  const handleOverlayClick = ( e ) =>
   {
-    e.preventDefault();
-    handleSignup();
-  };
-
-  const handleLoginSubmit = ( e ) =>
-  {
-    e.preventDefault();
-    handleLogin();
+    if ( e.target === e.currentTarget )
+    {
+      onClose();
+    }
   };
 
   const toggleMode = () =>
@@ -82,107 +58,123 @@ function LoginPage ( { onClose } )
     setIsSignUp( ( prevIsSignUp ) => !prevIsSignUp );
   };
 
-  // Add event listener to close on outside click
-  useEffect( () =>
-  {
-    const handleOutsideClick = ( e ) =>
-    {
-      if ( !document.getElementById( "login-modal" ).contains( e.target ) )
-      {
-        onClose();
-      }
-    };
-
-    document.addEventListener( "mousedown", handleOutsideClick );
-
-    return () =>
-    {
-      document.removeEventListener( "mousedown", handleOutsideClick );
-    };
-  }, [ onClose ] );
-
   return (
-    <ModalOverlay onClose={onClose}>
-      <div
-        id="login-modal"
-        className="bg-blue-900 p-6 rounded-lg shadow-lg text-white text-center"
-      >
-        {signedUpUsername && (
-          <h4>
-            Welcome {signedUpUsername}
+    <div style={styles.overlay} onClick={handleOverlayClick}>
+      <div style={styles.modal}>
+        <div style={styles.modalContent}>
+          {signedUpUsername && (
+            <h4>
+              Welcome {signedUpUsername}
+              <br />
+              <br />
+              Confirm account creation?
+            </h4>
+          )}
+          {!signedUpUsername && (
+            <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>
+          )}
+          <form onSubmit={handleAuthentication}>
+            <label>
+              Email:
+              <input
+                type="email"
+                value={email}
+                onChange={( e ) => setEmail( e.target.value )}
+                style={styles.input}
+              />
+            </label>
             <br />
+            <label>
+              Password:
+              <input
+                type="password"
+                value={password}
+                onChange={( e ) => setPassword( e.target.value )}
+                style={styles.input}
+              />
+            </label>
+            {isSignUp && (
+              <>
+                <br />
+                <label>
+                  Confirm Password:
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={( e ) => setConfirmPassword( e.target.value )}
+                    style={styles.input}
+                  />
+                </label>
+              </>
+            )}
             <br />
-            Confirm account creation?
-          </h4>
-        )}
-        {!signedUpUsername && <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>}
-        {isSignUp ? (
-          <form onSubmit={handleSignupSubmit} className="mt-4">
-            <input
-              type="text"
-              value={username}
-              onChange={( e ) => setUsername( e.target.value )}
-              placeholder="Username"
-              className="w-full px-3 py-2 mb-2 rounded bg-blue-800 text-white"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={( e ) => setPassword( e.target.value )}
-              placeholder="Password"
-              className="w-full px-3 py-2 mb-2 rounded bg-blue-800 text-white"
-            />
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={( e ) => setConfirmPassword( e.target.value )}
-              placeholder="Confirm Password"
-              className="w-full px-3 py-2 mb-2 rounded bg-blue-800 text-white"
-            />
-            <button
-              type="submit"
-              className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded"
-            >
-              Sign Up
+            <button type="submit" style={styles.button}>
+              {isSignUp ? "Sign Up" : "Log In"}
             </button>
           </form>
-        ) : (
-          <form onSubmit={handleLoginSubmit} className="mt-4">
-            <input
-              type="text"
-              value={username}
-              onChange={( e ) => setUsername( e.target.value )}
-              placeholder="Username"
-              className="w-full px-3 py-2 mb-2 rounded bg-blue-800 text-white"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={( e ) => setPassword( e.target.value )}
-              placeholder="Password"
-              className="w-full px-3 py-2 mb-2 rounded bg-blue-800 text-white"
-            />
-            <button
-              type="submit"
-              className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded"
-            >
-              Submit
-            </button>
-          </form>
-        )}
-        <div className="mt-4 text-white">
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <span
-            onClick={toggleMode}
-            className="cursor-pointer text-blue-500 hover:underline"
-          >
-            {isSignUp ? "Login now" : "Sign up now"}
-          </span>
+          <div style={styles.infoText}>
+            {isSignUp
+              ? "Already have an account?"
+              : "Don't have an account?"}{" "}
+            <span onClick={toggleMode} style={styles.linkText}>
+              {isSignUp ? "Login now" : "Sign up now"}
+            </span>
+          </div>
         </div>
       </div>
       <ToastContainer />
-    </ModalOverlay>
+    </div>
   );
 }
 
-export default LoginPage;
+const styles = {
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    background: "rgba(0, 0, 0, 0.7)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  modal: {
+    backgroundColor: "black",
+    padding: "20px",
+    borderRadius: "8px",
+    textAlign: "center",
+  },
+  modalContent: {
+    width: "300px",
+  },
+  input: {
+    width: "100%",
+    padding: "8px",
+    margin: "5px 0",
+    boxSizing: "border-box",
+    backgroundColor: "black",
+    color: "white",
+    border: "1px solid white",
+    borderRadius: "4px",
+  },
+  button: {
+    backgroundColor: "green",
+    color: "white",
+    padding: "8px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  infoText: {
+    marginTop: "10px",
+    color: "white",
+  },
+  linkText: {
+    cursor: "pointer",
+    color: "blue",
+  },
+};
+
+export default AuthenticationPage;

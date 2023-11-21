@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import React from "react";
-import LoginPage from "./LoginPage.js";
+import AuthenticationPage from "./LoginPage.js";
 import { MOVIES } from "flixhq-core";
 import "animate.css";
 import "./App.css";
@@ -94,7 +94,7 @@ function App ()
       )}
       <div className="max-w-[1240px] shadow-xl mx-auto p-3 rounded-lg bg-blue-600">
         {showLoginPage && (
-          <LoginPage
+          <AuthenticationPage
             onClose={handleCloseLoginPage}
             animation="animate__fadeIn"
           />

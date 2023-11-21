@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
-
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
     apiKey: "AIzaSyCGzRdo4c1HC1qo1qxEfR_d0oRzSUcLllQ",
     authDomain: "movieflix-5017b.firebaseapp.com",
@@ -11,5 +12,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp( firebaseConfig );
+const auth = getAuth( app );
+const db = getFirestore( app );
 
-export default app;
+export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, db };
