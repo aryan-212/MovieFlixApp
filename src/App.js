@@ -77,13 +77,13 @@ function App ()
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <h1 className="text-6xl text-center mt-8 mb-10"><b>MovieFlix</b></h1>
+      <h1 className="text-6xl text-center mt-0 mb-10 pt-4"><b>MovieFlix</b></h1>
       {isLoggedIn ? (
         <div className="text-right p-2 absolute top-10 right-0">
           {/* Add user information here */}
         </div>
       ) : (
-        <div className=" text-3xl text-white p-2 text-right absolute top-10 right-0">
+        <div className="text-3xl text-white p-2 text-right absolute top-10 right-0">
           <button
             onClick={handleLoginClick}
             className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-bold text-lg"
@@ -127,5 +127,5 @@ function App ()
     </div>
   );
 }
-// SJDSHDJ
+
 export default App;
