@@ -21,7 +21,6 @@ function AuthenticationPage ( { onClose } )
     {
       if ( resetPasswordRequested )
       {
-        // Reset Password
         await sendPasswordResetEmail( auth, email );
         toast.success( "Password reset email sent. Check your inbox." );
         setResetPasswordRequested( false );
@@ -30,9 +29,6 @@ function AuthenticationPage ( { onClose } )
 
       if ( isSignUp )
       {
-        // Sign Up
-        console.log( "Signing up..." );
-
         if ( password.length < 6 )
         {
           setPasswordLengthError( "Password must be at least 6 characters long" );
@@ -42,22 +38,17 @@ function AuthenticationPage ( { onClose } )
         if ( password === confirmPassword )
         {
           await createUserWithEmailAndPassword( auth, email, password );
-          console.log( "Sign up successful!" );
           setSignedUpUsername( email );
           setIsSignUp( false );
           onClose();
           toast.success( "Account Created Successfully" );
         } else
         {
-          console.error( "Passwords do not match" );
           toast.error( "Passwords do not match" );
         }
       } else
       {
-        // Sign In
-        console.log( "Signing in..." );
         await signInWithEmailAndPassword( auth, email, password );
-        console.log( "Sign in successful!" );
         onClose();
       }
     } catch ( error )
@@ -109,9 +100,7 @@ function AuthenticationPage ( { onClose } )
               Confirm account creation?
             </h4>
           )}
-          {!signedUpUsername && (
-            <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>
-          )}
+          {!signedUpUsername && <h2>{isSignUp ? "Sign Up" : "Welcome back!"}</h2>}
           <form onSubmit={handleAuthentication}>
             <label>
               Email:
@@ -131,11 +120,7 @@ function AuthenticationPage ( { onClose } )
                 onChange={handlePasswordChange}
                 style={styles.input}
               />
-              {passwordLengthError && (
-                <div style={{ color: "red", fontSize: "12px" }}>
-                  {passwordLengthError}
-                </div>
-              )}
+              {passwordLengthError && <div style={styles.errorText}>{passwordLengthError}</div>}
             </label>
             {isSignUp && (
               <>
@@ -152,7 +137,7 @@ function AuthenticationPage ( { onClose } )
               </>
             )}
             <br />
-            <button type="submit" style={styles.button}>
+            <button type="submit" style={isSignUp ? { ...styles.button, ...styles.buttonHover } : styles.button}>
               {isSignUp ? "Sign Up" : "Log In"}
             </button>
             {!isSignUp && (
@@ -162,9 +147,7 @@ function AuthenticationPage ( { onClose } )
             )}
           </form>
           <div style={styles.infoText}>
-            {isSignUp
-              ? "Already have an account?"
-              : "Don't have an account?"}{" "}
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <span onClick={toggleMode} style={styles.linkText}>
               {isSignUp ? "Login now" : "Sign up now"}
             </span>
@@ -194,16 +177,17 @@ const styles = {
     padding: "20px",
     borderRadius: "8px",
     textAlign: "center",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
   modalContent: {
     width: "300px",
   },
   input: {
     width: "100%",
-    padding: "8px",
-    margin: "5px 0",
+    padding: "10px",
+    margin: "10px 0",
     boxSizing: "border-box",
-    backgroundColor: "black",
+    backgroundColor: "#333",
     color: "white",
     border: "1px solid white",
     borderRadius: "4px",
@@ -211,18 +195,30 @@ const styles = {
   button: {
     backgroundColor: "green",
     color: "white",
-    padding: "8px",
+    padding: "12px",
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
+    fontWeight: "bold",
+    transition: "background-color 0.3s ease",
+  },
+  buttonHover: {
+    backgroundColor: "darkgreen",
   },
   infoText: {
-    marginTop: "10px",
+    marginTop: "15px",
     color: "white",
+    fontSize: "14px",
   },
   linkText: {
     cursor: "pointer",
     color: "green",
+    textDecoration: "underline",
+    marginLeft: "5px",
+  },
+  errorText: {
+    color: "red",
+    fontSize: "12px",
   },
 };
 
